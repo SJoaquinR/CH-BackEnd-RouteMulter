@@ -1,0 +1,19 @@
+extends ./layouts/layout
+
+block formProduct
+    div(class="container mt-3")
+        div( class="jumbotron")
+            h1= `Formulario de Productos`
+            form(action="/api/productos/productos", method="POST")
+                div(class="form-group")
+                    label(for="title") Titulo
+                    input(type="text", class="form-control", id="title", name="title", placeholder="Titulo")
+                div(class="form-group")
+                    label(for="price") Precio
+                    input(type="text", class="form-control", id="price", name="price", placeholder="Precio")
+                div(class="form-group")
+                    label(for="image") Imagen
+                    input(type="text", class="form-control", id="image", name="image", placeholder="Imagen")
+                div(class="form-group")
+                    button(class="btn btn-primary mt-3") Guardar
+                    a(href="/api/productos/productos", type="button", class="btn btn-primary mt-3 mx-3") Ver Productos

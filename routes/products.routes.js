@@ -17,24 +17,17 @@ const storage = multert.diskStorage({
 //para ser uso de mi archivo
 const upload = multert({ storage: storage });
 
-/* -------------------------------- Rutas -------------------------------- */
-/*
-{
-    id: automatico
-    title: (nombre del producto),
-    price: (precio),
-    thumbnail: (url al logo o foto del producto)
-}
 
-*/
+
+/* -------------------------------- Rutas -------------------------------- */
+// https://www.iconfinder.com/free_icons
 const products = [];
 
-routerProducts.get("/formulario", (req, res) => {
-  res.sendFile("form.html", { root: "./form" });
-});
-
-routerProducts.get("/", (req, res) => {
-  res.status(200).json(products);
+routerProducts.get("/productos", (req, res) => {
+   console.log(products);
+  // res.render('listProducts.hbs', {products: products});
+ //res.render('listProducts.pug', {products: products});
+res.render('pages/products.ejs', {products: products});
 });
 
 //devuelve un producto según su id
@@ -50,35 +43,18 @@ routerProducts.get("/:id", (req, res) => {
 });
 
 //agrega un producto y usamos middlewares
-routerProducts.post("/guardar", upload.single("myFile"), (req, res, next) => {
-  const file = req.file;
-  if (!file) {
-    const error = new Error("Archivo no encontrado");
-    error.httpStatusCode = 400;
-    return next(error);
-  }
-
+routerProducts.post("/productos", (req, res) => {
+  const { title, price, image } = req.body;
+  
   let producto = {
     id: products.length + 1,
-    title: req.body.title,
-    price: req.body.price,
-    thumbnail: path.join(__dirname, "../uploads", file.filename),
+    title: title,
+    price: price,
+    image: image,
   };
-
-  //console.log(req.body);
+ 
   products.push(producto);
-
-  //mostrar el nuevo producto con el ID asignado
-  res.status(200).json({ msg: "Producto agregada", data: products });
-});
-
-//agrega un producto
-routerProducts.post("/", (req, res) => {
-  console.log(req.body);
-  products.push(req.body);
-
-  //mostrar el nuevo producto con el ID asignado
-  res.status(200).json({ msg: "Producto agregada", data: products });
+  res.redirect("/");
 });
 
 //recibe y actualiza un producto según su id
@@ -106,6 +82,16 @@ routerProducts.delete("/:id", (req, res) => {
   } else {
     res.status(404).json({ msg: "Producto no encontrado" });
   }
+});
+
+
+//agrega un producto por postman
+routerProducts.post("/test", (req, res) => {
+  console.log(req.body);
+  products.push(req.body);
+
+  //mostrar el nuevo producto con el ID asignado
+  res.status(200).json({ msg: "Producto agregada", data: products });
 });
 
 module.exports = routerProducts;

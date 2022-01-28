@@ -1,0 +1,27 @@
+extends ./layouts/layout
+
+block listProducts
+    div(class="container mt-3")
+        div(class="jumbotron")
+            h1= `Lista de Productos `
+            if products.length > 0
+                table(class="table table-striped")
+                    tr
+                        th
+                            |Titulo
+                        th
+                            |Precio
+                        th
+                            |Imagen
+                    tr
+                        each val in products
+                            tr
+                                td
+                                    |#{val.title}
+                                td
+                                    |#{val.price}
+                                td(style="width:25%;")
+                                    img(src=val.image style="width:8%;" alt="Imagen")
+            else 
+                h4(style="color:red;Background-color:yellow;position:relative;width:25%;height:50px;")='No hay productos para mostrar'
+            a(href="/", type="button", class="btn btn-primary mt-3")='ir al formulario'
