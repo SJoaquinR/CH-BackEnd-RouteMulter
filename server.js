@@ -1,48 +1,64 @@
 /* -------------------------------- Modulos -------------------------------- */
-const express = require("express");
-const bodyParser = require("body-parser");
-const path = require("path");
-const exphbs = require("express-handlebars");
+const express = require('express')
 
-//const routerProducts = express.Router();
-const routerProducts = require("./routes/products.routes");
+const { Server: HttpServer } = require('http')
+const { Server: Socket } = require('socket.io')
+
+const ContainerMemory = require('./containers/memory.js')
+const containerMessage = require('./containers/message.js')
+
+
 /* -------------------------------- Instancia de Express ------------------------ */
-const app = express();
+const app = express()
+const httpServer = new HttpServer(app)
+const io = new Socket(httpServer)
+
+const productsApi = new ContainerMemory()
+const messagesApi = new containerMessage('messages.json')
+
+/* ---------------------- Socket ----------------------*/
+
+io.on('connection', async socket => {
+    console.log(`Nuevo cliente conectado! ${socket.id}`);
+
+    // Listar productos
+    socket.emit('products', productsApi.listAll());
+
+    // Agrego productos
+    socket.on('addProduct', product => {
+        productsApi.save(product)
+        io.sockets.emit('products', productsApi.listAll());
+    })
+
+    // Listar mensajes
+    socket.emit('messages', await messagesApi.listAll());
+
+    // Agrego mensaje
+    socket.on('newMessage', async mensaje => {
+        mensaje.fyh = new Date().toLocaleString()
+        await messagesApi.save(mensaje)
+        io.sockets.emit('messages', await messagesApi.listAll());
+    })
+});
 
 /* -------------------------------- Middlewares -------------------------------- */
-//app.use(express.static("public"));
 
-routerProducts.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-/* -------------------------------- Motor de plantillas -------------------------------- */
-app.set('views', path.join(__dirname, 'views'));
-//Config extra para lo que es HBS
-app.engine('hbs', exphbs.engine({
-  defaultLayout: 'main',
-  layoutsDir: path.join(app.get('views'), 'layouts'),
-  partialsDir: path.join(app.get('views'), 'partials'),
-  extname: 'hbs'
-}));
-//------------------------------------
-app.set('view engine', '');
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(express.static('public'))
 
 /* -------------------------------- Server -------------------------------- */
-const PORT = 8080;
-const server = app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
 
-server.on("error", (err) => {
-  console.log(`Error en el servidor: ${err}`);
-});
+const PORT = 8080
+const server = httpServer.listen(PORT, () => {
+    console.log(`Server is running on port ${server.address().port}`)
+})
+server.on('error', error => console.log(`Error en el servidor ${error}`))
 
-/* -------------------------------- Rutas -------------------------------- */
-/* Agregamos routers a la app */
-app.use("/api/productos", routerProducts);
+/*
+https://www.iconfinder.com/free_icons
+    npm init -y 
+    npm install express body-parser express-handlebars socket.io
+        "dev": "nodemon server.js"
 
-app.get("/", (req, res) => {
-  // res.render("formProduct.hbs");
-  // res.render("formProduct.pug");
-  res.render('pages/form.ejs');
-});
+*/
