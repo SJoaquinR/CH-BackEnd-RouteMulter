@@ -4,8 +4,11 @@ const express = require('express')
 const { Server: HttpServer } = require('http')
 const { Server: Socket } = require('socket.io')
 
-const ContainerMemory = require('./containers/memory.js')
-const containerMessage = require('./containers/message.js')
+// const ContainerMemory = require('./containers/memory.js')
+// const containerMessage = require('./containers/message.js')
+
+const ContainerMemory = require('./containers/memoryDB.js')
+const containerMessage = require('./containers/messageDB.js')
 
 
 /* -------------------------------- Instancia de Express ------------------------ */
@@ -14,11 +17,12 @@ const httpServer = new HttpServer(app)
 const io = new Socket(httpServer)
 
 const productsApi = new ContainerMemory()
-const messagesApi = new containerMessage('messages.json')
+// const messagesApi = new containerMessage('messages.json')
+const messagesApi = new containerMessage()
 
 /* ---------------------- Socket ----------------------*/
 
-io.on('connection', async socket => {
+io.on('connection', socket => {
     console.log(`Nuevo cliente conectado! ${socket.id}`);
 
     // Listar productos
@@ -31,15 +35,38 @@ io.on('connection', async socket => {
     })
 
     // Listar mensajes
-    socket.emit('messages', await messagesApi.listAll());
+    socket.emit('messages', messagesApi.listAll());
 
     // Agrego mensaje
-    socket.on('newMessage', async mensaje => {
+    socket.on('newMessage', mensaje => {
         mensaje.fyh = new Date().toLocaleString()
-        await messagesApi.save(mensaje)
-        io.sockets.emit('messages', await messagesApi.listAll());
+        messagesApi.save(mensaje)
+        io.sockets.emit('messages', messagesApi.listAll());
     })
 });
+
+// io.on('connection', async socket => {
+//     console.log(`Nuevo cliente conectado! ${socket.id}`);
+
+//     // Listar productos
+//     socket.emit('products', productsApi.listAll());
+
+//     // Agrego productos
+//     socket.on('addProduct', product => {
+//         productsApi.save(product)
+//         io.sockets.emit('products', productsApi.listAll());
+//     })
+
+//     // Listar mensajes
+//     socket.emit('messages', await messagesApi.listAll());
+
+//     // Agrego mensaje
+//     socket.on('newMessage', async mensaje => {
+//         mensaje.fyh = new Date().toLocaleString()
+//         await messagesApi.save(mensaje)
+//         io.sockets.emit('messages', await messagesApi.listAll());
+//     })
+// });
 
 /* -------------------------------- Middlewares -------------------------------- */
 
