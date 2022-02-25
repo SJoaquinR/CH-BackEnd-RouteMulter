@@ -24,7 +24,8 @@ class ContainerMemoryDB {
     }
 
     listAll() {
-        return this.knex.from(this.bd).select('*');
+        console.log(this.knex.from('products').select('*'));
+        //return this.knex.from(this.bd).select('*');
     }
 
     eliminar(id) {

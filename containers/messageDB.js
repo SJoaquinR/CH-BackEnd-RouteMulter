@@ -1,6 +1,6 @@
 const knexLib = require("knex");
 
-class ContainerMemoryDB {
+class ContainerMessageDB {
   constructor(options) {
     this.bd = "message";
     this.knex = knexLib(options);
@@ -37,4 +37,4 @@ class ContainerMemoryDB {
   }
 }
 
-module.exports = ContainerMemoryDB;
+module.exports = ContainerMessageDB;
