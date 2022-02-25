@@ -48,29 +48,6 @@ io.on("connection", async (socket) => {
   });
 });
 
-// io.on('connection', async socket => {
-//     console.log(`Nuevo cliente conectado! ${socket.id}`);
-
-//     // Listar productos
-//     socket.emit('products', productsApi.listAll());
-
-//     // Agrego productos
-//     socket.on('addProduct', product => {
-//         productsApi.save(product)
-//         io.sockets.emit('products', productsApi.listAll());
-//     })
-
-//     // Listar mensajes
-//     socket.emit('messages', await messagesApi.listAll());
-
-//     // Agrego mensaje
-//     socket.on('newMessage', async mensaje => {
-//         mensaje.fyh = new Date().toLocaleString()
-//         await messagesApi.save(mensaje)
-//         io.sockets.emit('messages', await messagesApi.listAll());
-//     })
-// });
-
 /* -------------------------------- Middlewares -------------------------------- */
 
 app.use(express.json());
