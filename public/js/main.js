@@ -48,19 +48,19 @@ formMessage.addEventListener("submit", (e) => {
 });
 
 const makeHtmlList = (messages) => {
-    return messages
-      .map((messages) => {
-        const {author, fyh, text} = messages;
-        return `
+  return messages
+    .map((messages) => {
+      const { author, fyh, text } = messages;
+      return `
               <div>
                   <b style="color:blue;">${author}</b>
                   [<span style="color:brown;">${fyh}</span>] :
                   <i style="color:green;">${text}</i>
               </div>
           `;
-      })
-      .join(" ");
-  }
+    })
+    .join(" ");
+};
 
 socket.on("messages", (messages) => {
   console.log(messages);

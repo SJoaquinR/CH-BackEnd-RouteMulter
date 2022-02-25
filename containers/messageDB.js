@@ -10,8 +10,9 @@ class ContainerMessageDB {
     return this.knex.schema.dropTableIfExists(this.bd).finally(() => {
       return this.knex.schema.createTable(this.bd, (table) => {
         table.increments("id").primary();
-        table.string("email", 50).notNullable();
-        table.string("message", 100).notNullable();
+        table.string("author", 50).notNullable();
+        table.string("fyh", 50).notNullable();
+        table.string("text", 500).notNullable();
       });
     });
   }

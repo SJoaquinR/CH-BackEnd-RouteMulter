@@ -26,16 +26,19 @@ io.on("connection", async (socket) => {
   console.log(`Nuevo cliente conectado! ${socket.id}`);
 
   // // Listar productos
-  socket.emit("products", await productsApi.listAll());
+  let responseProducts = await productsApi.listAll();
+  socket.emit("products", responseProducts);
 
   // // Agrego productos
   socket.on("addProduct", async (product) => {
     await productsApi.save(product);
-    io.sockets.emit("products", await productsApi.listAll());
+
+    let responseProducts = await productsApi.listAll();
+    io.sockets.emit("products", responseProducts);
   });
 
   // Listar mensajes
-   socket.emit('messages', await messagesApi.listAll());
+  socket.emit("messages", await messagesApi.listAll());
 
   // Agrego mensaje
   socket.on("newMessage", async (mensaje) => {
